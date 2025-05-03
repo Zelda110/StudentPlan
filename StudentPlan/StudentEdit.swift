@@ -14,14 +14,14 @@ enum Gender: String, Codable {
 }
 
 enum Stage: String, Codable {
-    case beginner = "初级"
-    case intermediate = "中级"
+    case beginner = "启蒙"
+    case intermediate = "初级"
     case advanced = "高级"
 }
 
 struct Skill: Codable {
-    var stage: Stage?
-    var level: Int?
+    var stage: Stage = .beginner
+    var level: Int = 1
 }
 
 struct SkillGroup: Codable {
@@ -36,25 +36,33 @@ struct SkillGroup: Codable {
     var 稳定性: Skill = Skill()
 }
 
-class Student: Codable, Identifiable {
+struct Plan: Codable {
+    var skillGroup: SkillGroup
+}
+
+class Student: Codable, Identifiable, Equatable {
     var name: String
     var gender: Gender
     var height: Float
     var weight: Float
-    var skillGroup: SkillGroup
+    var plans: [Plan]
 
     init(
         name: String,
         gender: Gender,
         height: Float,
         weight: Float,
-        skillGroup: SkillGroup
+        plans: [Plan]
     ) {
         self.name = name
         self.gender = gender
         self.height = height
         self.weight = weight
-        self.skillGroup = skillGroup
+        self.plans = plans
+    }
+    
+    static func == (lhs:Student,rhs:Student) -> Bool {
+        return lhs.name == rhs.name
     }
 }
 
@@ -64,7 +72,7 @@ struct StudentEdit: View {
     @State var gender: Gender = .male
     @State var height: String = ""
     @State var weight: String = ""
-    @State var skillGroup: SkillGroup = SkillGroup()
+    @State var plans: [Plan] = []
     @Binding var editing: Bool
     @Binding var student_list: [Student]
     @State var alerting = false
@@ -75,14 +83,9 @@ struct StudentEdit: View {
                 TextField(name, text: $name)
             }
             HStack {
-                Text("性别")
-                MenuButton(label: Text(gender.rawValue)) {
-                    Button("男") {
-                        gender = .male
-                    }
-                    Button("女") {
-                        gender = .female
-                    }
+                Picker("性别",selection: $gender){
+                    Text("男").tag(Gender.male)
+                    Text("女").tag(Gender.female)
                 }
             }
             HStack {
@@ -109,7 +112,7 @@ struct StudentEdit: View {
                                     gender: gender,
                                     height: Float(height)!,
                                     weight: Float(weight)!,
-                                    skillGroup: skillGroup
+                                    plans: plans
                                 )
                             )
                         if let encoded = try? JSONEncoder().encode(student_list)
