@@ -14,7 +14,7 @@ struct ContentView: View {
     var body: some View {
             VStack() {
                 Text("炫飞羽毛球教练评价系统").font(.title)
-                Text("version 1.2").font(.footnote)
+                Text("version 1.3").font(.footnote)
                 InputView(student_list: $student_list)
             }
             .onAppear {
@@ -50,12 +50,12 @@ struct InputView: View {
         var body: some View {
             HStack {
                 Picker(text, selection: $skill.stage) {
-                    Text("启蒙").tag(Stage.beginner)
-                    Text("初级").tag(Stage.intermediate)
-                    Text("高级").tag(Stage.advanced)
+                    Text(Stage.beginner.rawValue).tag(Stage.beginner)
+                    Text(Stage.intermediate.rawValue).tag(Stage.intermediate)
+                    Text(Stage.advanced.rawValue).tag(Stage.advanced)
                 }
                 .frame(maxWidth: 150)
-                Stepper(value: $skill.level, in: 1...5) {
+                Stepper(value: $skill.level, in: 1...3) {
                     Text(String(skill.level))
                 }
             }
@@ -370,6 +370,7 @@ struct ShowingView: View {
                         Image("bg")
                             .resizable()
                             .scaledToFit()
+                            .scaleEffect(0.5)
                     }
                 }
                 .fixedSize(horizontal: false, vertical: true)
@@ -548,6 +549,7 @@ func get_sharing_view(
                     Image("bg")
                         .resizable()
                         .scaledToFit()
+                        .scaleEffect(0.5)
                 }
             }
             .fixedSize(horizontal: false, vertical: true)

@@ -16,7 +16,7 @@ enum Gender: String, Codable {
 enum Stage: String, Codable {
     case beginner = "启蒙"
     case intermediate = "初级"
-    case advanced = "高级"
+    case advanced = "中级"
 }
 
 struct Skill: Codable {
