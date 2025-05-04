@@ -12,18 +12,21 @@ struct ContentView: View {
     @AppStorage("student_list") private var studentListData: Data = Data()
     @State var student_list: [Student] = []
     var body: some View {
-        VStack {
-            InputView(student_list: $student_list)
-        }
-        .padding()
-        .onAppear {
-            if let decoded = try? JSONDecoder().decode(
-                [Student].self,
-                from: studentListData
-            ) {
-                student_list = decoded
+            VStack() {
+                Text("炫飞羽毛球教练评价系统").font(.title)
+                Text("version 1.2").font(.footnote)
+                InputView(student_list: $student_list)
             }
-        }
+            .onAppear {
+                if let decoded = try? JSONDecoder().decode(
+                    [Student].self,
+                    from: studentListData
+                ) {
+                    student_list = decoded
+                }
+            }
+            .frame(minWidth:500)
+            .padding(.vertical)
     }
 }
 
@@ -33,8 +36,9 @@ struct StudentView: View {
         VStack(alignment: .leading) {
             Text(student.name).font(.title)
             Text(student.gender.rawValue)
-            Text(String(student.height) + "m")
-            Text(String(student.weight) + "kg")
+            Text(
+                String(Calendar.current.component(.year, from: Date())-student.birthday)+"岁"
+            )
         }
     }
 }
@@ -132,14 +136,10 @@ struct InputView: View {
                                 name: student_list[selectedStudentIndex!].name,
                                 gender: student_list[selectedStudentIndex!]
                                     .gender,
-                                height: String(
-                                    student_list[selectedStudentIndex!].height
-                                ),
-                                weight: String(
-                                    student_list[selectedStudentIndex!].weight
-                                ),
                                 plans: student_list[selectedStudentIndex!]
                                     .plans,
+                                birthday:String(student_list[selectedStudentIndex!]
+                                    .birthday),
                                 editing: $editing_student,
                                 student_list: $student_list
                             )
@@ -296,9 +296,14 @@ struct ShowingView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading) {
-                Text(student_list[selectedStudentIndex!].name + "训练计划")
+                let student = student_list[selectedStudentIndex!]
+                Text(student.name + "训练计划")
                     .font(.title)
-                    .padding(.bottom)
+                Text(student.gender.rawValue)
+                Text(
+                    String(Calendar.current.component(.year, from: Date())-student.birthday)+"岁"
+                )
+                .padding(.bottom)
                 VStack(alignment: .leading) {
                     Text("技术水平").font(.title).padding(.bottom)
                     StagePicker(skill: skills.高远球, text: "高远球")
@@ -457,9 +462,14 @@ func get_sharing_view(
 ) -> some View {
     VStack {
         VStack(alignment: .leading) {
-            Text(student_list[selectedStudentIndex!].name + "训练计划")
+            let student = student_list[selectedStudentIndex!]
+            Text(student.name + "训练计划")
                 .font(.title)
-                .padding(.bottom)
+            Text(student.gender.rawValue)
+            Text(
+                String(Calendar.current.component(.year, from: Date())-student.birthday)+"岁"
+            )
+            .padding(.bottom)
             VStack(alignment: .leading) {
                 Text("技术水平").font(.title).padding(.bottom)
                 SharingStagePicker(skill: skills.高远球, text: "高远球")

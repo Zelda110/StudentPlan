@@ -43,25 +43,22 @@ struct Plan: Codable {
 class Student: Codable, Identifiable, Equatable {
     var name: String
     var gender: Gender
-    var height: Float
-    var weight: Float
+    var birthday: Int
     var plans: [Plan]
 
     init(
         name: String,
         gender: Gender,
-        height: Float,
-        weight: Float,
+        birthday: Int,
         plans: [Plan]
     ) {
         self.name = name
         self.gender = gender
-        self.height = height
-        self.weight = weight
+        self.birthday = birthday
         self.plans = plans
     }
-    
-    static func == (lhs:Student,rhs:Student) -> Bool {
+
+    static func == (lhs: Student, rhs: Student) -> Bool {
         return lhs.name == rhs.name
     }
 }
@@ -70,9 +67,8 @@ struct StudentEdit: View {
     @AppStorage("student_list") private var studentListData: Data = Data()
     @State var name: String = ""
     @State var gender: Gender = .male
-    @State var height: String = ""
-    @State var weight: String = ""
     @State var plans: [Plan] = []
+    @State var birthday: String = ""
     @Binding var editing: Bool
     @Binding var student_list: [Student]
     @State var alerting = false
@@ -83,18 +79,14 @@ struct StudentEdit: View {
                 TextField(name, text: $name)
             }
             HStack {
-                Picker("性别",selection: $gender){
+                Picker("性别", selection: $gender) {
                     Text("男").tag(Gender.male)
                     Text("女").tag(Gender.female)
                 }
             }
             HStack {
-                Text("身高")
-                TextField(height, text: $height)
-            }
-            HStack {
-                Text("体重")
-                TextField(weight, text: $weight)
+                Text("出生年份")
+                TextField(birthday, text: $birthday)
             }
             HStack {
                 Button {
@@ -103,32 +95,28 @@ struct StudentEdit: View {
                     Text("取消")
                 }
                 Button {
-                    if Float(height) != nil, Float(weight) != nil {
+                    if let birth = Int(birthday){
                         student_list.removeAll(where: { $0.name == name })
                         student_list
                             .append(
                                 Student(
                                     name: name,
                                     gender: gender,
-                                    height: Float(height)!,
-                                    weight: Float(weight)!,
+                                    birthday: birth,
                                     plans: plans
                                 )
                             )
-                        if let encoded = try? JSONEncoder().encode(student_list)
-                        {
+                        if let encoded = try? JSONEncoder().encode(student_list) {
                             studentListData = encoded
                         }
                         editing = false
-                    } else {
+                    }else{
                         alerting = true
                     }
-                } label: {
+                }label: {
                     Text("确定")
-                }.alert(isPresented: $alerting) {
-                    Alert(title: Text("身高体重格式错误"))
                 }
-            }
+            }.alert("出生年份格式错误", isPresented: $alerting){}
         }
         .padding()
     }
